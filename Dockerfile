@@ -15,6 +15,8 @@ RUN apk add --no-cache \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
 
+COPY docker/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html

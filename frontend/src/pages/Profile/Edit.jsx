@@ -46,9 +46,7 @@ export default function Edit() {
         });
 
         try {
-            const { data: res } = await api.post('/profile', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            const { data: res } = await api.post('/profile', formData);
             setUser(res.user);
             alert('Profile updated successfully!');
         } catch (error) {

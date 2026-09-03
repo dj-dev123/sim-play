@@ -55,18 +55,14 @@ export default function ListOfActivities() {
       let res;
       if (form.id) {
         // EDIT
-        res = await api.post(`/teacher/activities/${form.id}/update`, data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        res = await api.post(`/teacher/activities/${form.id}/update`, data);
         setActivities((prev) =>
           prev.map((a) => (a.id === res.data.activity.id ? res.data.activity : a))
         );
         setFeedbackMessage("Activity updated successfully!");
       } else {
         // ADD
-        res = await api.post(`/teacher/classes/${classroom.id}/activities`, data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        res = await api.post(`/teacher/classes/${classroom.id}/activities`, data);
         setActivities((prev) => [res.data.activity, ...prev]);
         setFeedbackMessage("Activity added successfully!");
       }

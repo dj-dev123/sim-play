@@ -13,9 +13,6 @@ chown -R www-data:www-data storage bootstrap/cache
 php artisan config:cache
 php artisan route:cache
 php artisan migrate --force
-
-if [ "$FILESYSTEM_DISK" = "local" ]; then
-    php artisan storage:link || true
-fi
+php artisan storage:link || true
 
 exec /usr/bin/supervisord -c /etc/supervisord.conf

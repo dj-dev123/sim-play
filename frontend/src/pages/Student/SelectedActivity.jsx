@@ -64,21 +64,7 @@ export default function SelectedActivity() {
             </div>
           </div>
 
-          {/* Intro Section */}
-          <div className="flex flex-col sm:flex-row items-start gap-6 mb-8">
-            <img
-              src="/images/kids.png"
-              alt="Kids"
-              className="w-32 sm:w-40 flex-shrink-0"
-            />
 
-            <p className="text-[#2f4816] text-base sm:text-lg leading-relaxed">
-              Hi, this is our first activity. Did you know that the greatest
-              common factor (GCF) of a set of numbers is the largest factor that
-              all the numbers share? Follow the example below and answer the
-              activities that follow.
-            </p>
-          </div>
 
           {/* Activity Info */}
           <div className="bg-white/70 rounded-2xl p-5 mb-8">

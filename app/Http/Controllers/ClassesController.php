@@ -35,4 +35,29 @@ class ClassesController extends Controller
 
         return response()->json(['class' => $class], 201);
     }
+
+    // Update existing class
+    public function update_class(Request $request, $classId)
+    {
+        $class = Classes::where('teacher_id', Auth::id())->findOrFail($classId);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $class->name = $request->name;
+        $class->save();
+
+        return response()->json(['class' => $class]);
+    }
+
+    // Delete class
+    public function delete_class($classId)
+    {
+        $class = Classes::where('teacher_id', Auth::id())->findOrFail($classId);
+
+        $class->delete();
+
+        return response()->json(['message' => 'Class deleted successfully.']);
+    }
 }

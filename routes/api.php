@@ -54,7 +54,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [LoginController::class, 'teacher_dashboard']);
         Route::get('/classes', [ClassesController::class, 'classes']);
         Route::post('/add_class', [ClassesController::class, 'add_class']);
+        Route::post('/classes/{classId}/update', [ClassesController::class, 'update_class']);
+        Route::delete('/classes/{classId}/delete', [ClassesController::class, 'delete_class']);
         Route::post('/add_student/{classId}', [StudentController::class, 'add_student']);
+        Route::post('/classes/{classId}/students/{studentId}/update', [StudentController::class, 'update_student']);
+        Route::delete('/classes/{classId}/students/{studentId}/delete', [StudentController::class, 'delete_student']);
 
         Route::get('/activities', [ActivitiesController::class, 'teacher_activities']);
         Route::get('/list_of_activities/{classId}', [ActivitiesController::class, 'list_of_activities']);

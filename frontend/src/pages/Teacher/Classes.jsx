@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import TeacherLayout from "@/layouts/TeacherLayout";
-import { ChevronDown, Plus } from "lucide-react";
+import { ChevronDown, Plus, Pencil, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -27,6 +27,13 @@ export default function Classes() {
     email: "",
     password: "",
   });
+
+  // Edit Class state
+  const [editClassId, setEditClassId] = useState(null);
+  const [editClassName, setEditClassName] = useState("");
+
+  // Edit Student state
+  const [editStudent, setEditStudent] = useState(null);
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -121,6 +128,123 @@ export default function Classes() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // ---------- Edit Class ----------
+  const openEditClass = (e, cls) => {
+    e.stopPropagation();
+    setEditClassId(cls.id);
+    setEditClassName(cls.name);
+  };
+
+  const handleUpdateClass = async (e) => {
+    e.preventDefault();
+    if (!editClassName) return;
+
+    setLoading(true);
+    try {
+      const res = await api.post(`/teacher/classes/${editClassId}/update`, { name: editClassName });
+      setClasses(classes.map((c) => (c.id === editClassId ? { ...c, name: res.data.class.name } : c)));
+      toast({ title: "Class updated successfully!" });
+      setEditClassId(null);
+    } catch (err) {
+      console.error(err);
+      const message = errorMessage(err, "Failed to update class");
+      toast({ title: "Error", description: message, variant: "destructive" });
+      showDialog("Error", message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---------- Delete Class ----------
+  const handleDeleteClass = (e, cls) => {
+    e.stopPropagation();
+    showDialog(
+      "Delete Class",
+      `Are you sure you want to delete "${cls.name}"? This will also remove its students and activities.`,
+      "confirm",
+      async () => {
+        try {
+          await api.delete(`/teacher/classes/${cls.id}/delete`);
+          setClasses(classes.filter((c) => c.id !== cls.id));
+          toast({ title: "Class deleted successfully!" });
+        } catch (err) {
+          console.error(err);
+          const message = errorMessage(err, "Failed to delete class");
+          toast({ title: "Error", description: message, variant: "destructive" });
+        }
+      }
+    );
+  };
+
+  // ---------- Edit Student ----------
+  const openEditStudent = (classId, student) => {
+    setEditStudent({
+      classId,
+      id: student.id,
+      firstname: student.firstname || "",
+      middlename: student.middlename || "",
+      lastname: student.lastname || "",
+      username: student.username || "",
+      email: student.email || "",
+      password: "",
+    });
+  };
+
+  const handleUpdateStudent = async (e) => {
+    e.preventDefault();
+    if (!editStudent) return;
+
+    setLoading(true);
+    try {
+      const { classId, id, ...payload } = editStudent;
+      const res = await api.post(`/teacher/classes/${classId}/students/${id}/update`, payload);
+
+      setClasses(
+        classes.map((cls) => {
+          if (cls.id !== classId) return cls;
+          return {
+            ...cls,
+            students: (cls.students || []).map((s) => (s.id === id ? { ...s, ...res.data.student } : s)),
+          };
+        })
+      );
+      toast({ title: "Student updated successfully!" });
+      setEditStudent(null);
+    } catch (err) {
+      console.error(err);
+      const message = errorMessage(err, "Failed to update student");
+      toast({ title: "Error", description: message, variant: "destructive" });
+      showDialog("Error", message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---------- Delete Student ----------
+  const handleDeleteStudent = (classId, student) => {
+    showDialog(
+      "Remove Student",
+      `Remove ${student.firstname} ${student.lastname} from this class?`,
+      "confirm",
+      async () => {
+        try {
+          await api.delete(`/teacher/classes/${classId}/students/${student.id}/delete`);
+          setClasses(
+            classes.map((cls) => {
+              if (cls.id !== classId) return cls;
+              return { ...cls, students: (cls.students || []).filter((s) => s.id !== student.id) };
+            })
+          );
+          toast({ title: "Student removed successfully!" });
+        } catch (err) {
+          console.error(err);
+          const message = errorMessage(err, "Failed to remove student");
+          toast({ title: "Error", description: message, variant: "destructive" });
+        }
+      }
+    );
   };
 
 
@@ -246,6 +370,22 @@ export default function Classes() {
                   </DialogContent>
                 </Dialog>
 
+                <button
+                  onClick={(e) => openEditClass(e, cls)}
+                  title="Edit class"
+                  className="flex items-center justify-center bg-white hover:bg-gray-100 text-gray-600 p-2 rounded-lg shadow ml-2"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+
+                <button
+                  onClick={(e) => handleDeleteClass(e, cls)}
+                  title="Delete class"
+                  className="flex items-center justify-center bg-white hover:bg-red-50 text-red-600 p-2 rounded-lg shadow ml-2"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+
                 <ChevronDown
                   className={`h-5 w-5 text-green-700 transform transition-transform duration-300 ml-2 ${
                     expanded === index ? "rotate-180" : ""
@@ -266,6 +406,7 @@ export default function Classes() {
                         <th className="px-4 py-2 text-left text-green-700 font-semibold">Name</th>
                         <th className="px-4 py-2 text-left text-green-700 font-semibold">Username</th>
                         <th className="px-4 py-2 text-left text-green-700 font-semibold">Email</th>
+                        <th className="px-4 py-2 text-left text-green-700 font-semibold">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -276,6 +417,24 @@ export default function Classes() {
                           </td>
                           <td className="px-4 py-2 text-green-800">{student.username || "-"}</td>
                           <td className="px-4 py-2 text-green-800">{student.email || "-"}</td>
+                          <td className="px-4 py-2">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => openEditStudent(cls.id, student)}
+                                title="Edit student"
+                                className="flex items-center justify-center bg-white hover:bg-gray-100 text-gray-600 p-1.5 rounded-lg shadow"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteStudent(cls.id, student)}
+                                title="Remove student"
+                                className="flex items-center justify-center bg-white hover:bg-red-50 text-red-600 p-1.5 rounded-lg shadow"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -285,6 +444,93 @@ export default function Classes() {
             </div>
           ))}
         </div>
+
+        {/* Edit Class Modal */}
+        <Dialog open={editClassId !== null} onOpenChange={(open) => !open && setEditClassId(null)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Class</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleUpdateClass} className="flex flex-col gap-4">
+              <input
+                type="text"
+                placeholder="Class Name"
+                value={editClassName}
+                onChange={(e) => setEditClassName(e.target.value)}
+                className="border border-gray-300 rounded-lg p-2"
+                required
+              />
+              <DialogFooter>
+                <Button type="submit" className="bg-green-600 hover:bg-green-700 w-full" disabled={loading}>
+                  {loading ? "Saving..." : "Save Changes"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Student Modal */}
+        <Dialog open={editStudent !== null} onOpenChange={(open) => !open && setEditStudent(null)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Student</DialogTitle>
+            </DialogHeader>
+            {editStudent && (
+              <form onSubmit={handleUpdateStudent} className="flex flex-col gap-4">
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  value={editStudent.firstname}
+                  onChange={(e) => setEditStudent({ ...editStudent, firstname: e.target.value })}
+                  required
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+                <input
+                  type="text"
+                  placeholder="Middle Name (optional)"
+                  value={editStudent.middlename}
+                  onChange={(e) => setEditStudent({ ...editStudent, middlename: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  value={editStudent.lastname}
+                  onChange={(e) => setEditStudent({ ...editStudent, lastname: e.target.value })}
+                  required
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+                <input
+                  type="text"
+                  placeholder="Username (optional)"
+                  value={editStudent.username}
+                  onChange={(e) => setEditStudent({ ...editStudent, username: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+                <input
+                  type="email"
+                  placeholder="Email (optional)"
+                  value={editStudent.email}
+                  onChange={(e) => setEditStudent({ ...editStudent, email: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+                <input
+                  type="password"
+                  placeholder="New Password (leave blank to keep current)"
+                  value={editStudent.password}
+                  onChange={(e) => setEditStudent({ ...editStudent, password: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+
+                <DialogFooter>
+                  <Button type="submit" className="bg-green-600 hover:bg-green-700 w-full" disabled={loading}>
+                    {loading ? "Saving..." : "Save Changes"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Feedback / Confirm Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

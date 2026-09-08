@@ -7,74 +7,41 @@ export default function Welcome() {
 
     return (
         <div className="min-h-screen bg-[#96b190] text-gray-800 flex flex-col">
-            {/* Top Logo Section */}
-            <header className="bg-gray-200 shadow-sm">
-                <div className="flex flex-col items-center py-4 sm:py-6 md:py-8">
-                    <img
-                        src="/salindingan_logo.jpg"
-                        alt="School Logo"
-                        className="
-                            h-16
-                            sm:h-32
-                            md:h-48
-                            lg:h-64
-                            xl:h-48
-                            mb-3
-                            object-contain
-
-                        "
-                    />
-                </div>
-            </header>
-
             {/* Center Content */}
-            <main className="flex flex-1 items-center justify-center px-4 sm:px-6 md:px-8">
+            <main className="flex flex-1 items-center justify-center px-4 sm:px-6 md:px-8 py-10">
                 <div className="
                     w-full
                     max-w-md
                     sm:max-w-lg
                     md:max-w-xl
-                    lg:max-w-2xl
                     text-center
+                    bg-white
+                    rounded-3xl
+                    shadow-xl
+                    px-6 sm:px-10 md:px-12
+                    py-10 sm:py-12 md:py-14
                 ">
-                    <h2 className="
-                        text-2xl
-                        sm:text-3xl
-                        md:text-4xl
-                        lg:text-5xl
-                        font-extrabold
-                        tracking-wide
-                    ">
-                        COME ON, LET’S{" "}
-                        <span className="text-orange-500">PLAY</span>
-                    </h2>
+                    <img
+                        src="/images/primath.png"
+                        alt="PriMath"
+                        className="
+                            mx-auto
+                            h-14
+                            sm:h-16
+                            md:h-20
+                            object-contain
+                        "
+                    />
 
                     <p className="
-                        mt-4
-                        text-sm
-                        sm:text-base
-                        md:text-lg
-                        lg:text-xl
-                        font-medium
-                    ">
-                        <span className="text-orange-500">P</span>lan to Solve •{" "}
-                        <span className="text-orange-500">L</span>ocate Common
-                        Denominator •{" "}
-                        <span className="text-orange-500">A</span>dd Numerators •{" "}
-                        <span className="text-orange-500">Y</span>ield the Final
-                        Result
-                    </p>
-
-                    <p className="
-                        mt-4
-                        sm:mt-6
+                        mt-6
+                        sm:mt-8
                         text-xs
                         sm:text-sm
                         md:text-base
-                        lg:text-lg
                         uppercase
                         tracking-wider
-                        text-black
+                        text-gray-600
                         font-bold
                     ">
                         A Strategic Intervention Material in Adding Dissimilar
@@ -82,7 +49,7 @@ export default function Welcome() {
                     </p>
 
                     {/* Login Button */}
-                    <div className="mt-6 sm:mt-8 md:mt-10">
+                    <div className="mt-8 sm:mt-10">
                         <Link
                             to={paths.login}
                             className="
@@ -99,6 +66,7 @@ export default function Welcome() {
                                 text-white
                                 shadow
                                 hover:bg-green-700
+                                transition-colors
                             "
                         >
                             Log in to Start

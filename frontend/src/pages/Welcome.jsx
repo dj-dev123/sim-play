@@ -15,41 +15,22 @@ export default function Welcome() {
                     sm:max-w-lg
                     md:max-w-xl
                     text-center
-                    bg-white
-                    rounded-3xl
-                    shadow-xl
-                    px-6 sm:px-10 md:px-12
-                    py-10 sm:py-12 md:py-14
                 ">
                     <img
                         src="/images/primath.png"
                         alt="PriMath"
                         className="
                             mx-auto
-                            h-14
-                            sm:h-16
-                            md:h-20
+                            h-20
+                            sm:h-24
+                            md:h-28
                             object-contain
+                            drop-shadow-md
                         "
                     />
 
-                    <p className="
-                        mt-6
-                        sm:mt-8
-                        text-xs
-                        sm:text-sm
-                        md:text-base
-                        uppercase
-                        tracking-wider
-                        text-gray-600
-                        font-bold
-                    ">
-                        A Strategic Intervention Material in Adding Dissimilar
-                        Fractions
-                    </p>
-
                     {/* Login Button */}
-                    <div className="mt-8 sm:mt-10">
+                    <div className="mt-10 sm:mt-12">
                         <Link
                             to={paths.login}
                             className="

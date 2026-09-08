@@ -6,7 +6,7 @@ export default function Welcome() {
     usePageTitle('Welcome');
 
     return (
-        <div className="min-h-screen min-h-dvh bg-[#96b190] text-gray-800 flex flex-col">
+        <div className="min-h-screen min-h-svh bg-[#96b190] text-gray-800 flex flex-col">
             {/* Center Content */}
             <main className="flex flex-1 items-center justify-center px-4 sm:px-6 md:px-8 py-10">
                 <div className="
